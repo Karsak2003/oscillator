@@ -1,3 +1,6 @@
+# Написал студент
+# группы ЭВТ-20-1б  
+# Каримов Рустам Тависович 
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
