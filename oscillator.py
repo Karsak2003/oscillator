@@ -29,6 +29,14 @@ def f_CV(a, ddof=0):
     q = a.std(ddof=ddof)
 
     return q/n * 100 
+def f_moving_average(a, n=3):
+    e = np.cumsum(a, dtype=float)
+    e[n:] = e[n:] - e[:-n]
+    return e[n-1:]/n
+def f_SNR_v2(a, ddof=0):
+    n = a.mean()
+    q = a.std(ddof=ddof)
+    return n/q
 
 noise = lambda time, n=0, q=0.1: np.random.normal(n, q, time.shape[0])
 
@@ -53,7 +61,7 @@ print(f'SNR(XNaddC(t)) = {f_SNR(mas_x_noise_add_cost)}')
 print(f'CV(XN(t)) = {f_CV(mas_x_noise)}')
 print(f'CV(XNaddC(t)) = {f_CV(mas_x_noise_add_cost)}')
 
-ax = plt.subplot()
+fg, ax = plt.subplots(figsize=(7.5, 3.5), layout='constrained')
 ax.plot(time, mas_x, label=f'X(t) = {amplitude}sin({round(w, 3)}t+{phase})')
 ax.plot(time, mas_x_noise, label=f'XN(t) = X(t) + noise(t)')
 ax.plot(time, mas_x_noise_add_cost, label=f'XNaddC(t) = x(t) + noise(t) + {c_a}')
@@ -62,6 +70,15 @@ ax.set_ylabel('X, м')
 ax.set_title("График горманических колебаний")
 
 ax.legend()
+
+fg_1, ax_1 = plt.subplots(figsize=(7.5, 3.5), layout='constrained')
+for K in sorted([2, 5, 10] + list(set(np.random.randint(5, 50, size=10)))):
+    S = f_moving_average(mas_x_noise_add_cost, n=K)
+    k = np.linspace(-1, 1, len(S))
+    SNR, CV = f_SNR_v2(S), f_CV(S)
+    ax_1.plot(k, S, label=f'K={K}, SNR={round(SNR, 2)}, CV={round(CV, 2)}')
+ax_1.set_title("Скользащее среднее с различным K")
+ax_1.legend()
 
 plt.show()
 
