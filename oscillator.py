@@ -18,6 +18,18 @@ t - время ([с] - секунда)
 
 '''
 
+def f_SNR(a, axis=0 , ddof=0):
+    a = np.asanyarray(a)
+    m = a.mean(axis)
+    sd = a.std(axis=axis, ddof=ddof)
+
+    return np.where(sd == 0, 0, m/sd)
+def f_CV(a, ddof=0):
+    n = a.mean()
+    q = a.std(ddof=ddof)
+
+    return q/n * 100 
+
 noise = lambda time, n=0, q=0.1: np.random.normal(n, q, time.shape[0])
 
 amplitude = 1
@@ -36,6 +48,11 @@ mas_x = [amplitude*np.sin(w * t + phase ) for t in time]
 mas_x_noise = mas_x + noise(time= time)
 mas_x_noise_add_cost = mas_x_noise + c_a
 
+print(f'SNR(XN(t)) = {f_SNR(mas_x_noise)}')
+print(f'SNR(XNaddC(t)) = {f_SNR(mas_x_noise_add_cost)}')
+print(f'CV(XN(t)) = {f_CV(mas_x_noise)}')
+print(f'CV(XNaddC(t)) = {f_CV(mas_x_noise_add_cost)}')
+
 ax = plt.subplot()
 ax.plot(time, mas_x, label=f'X(t) = {amplitude}sin({round(w, 3)}t+{phase})')
 ax.plot(time, mas_x_noise, label=f'XN(t) = X(t) + noise(t)')
@@ -47,3 +64,5 @@ ax.set_title("График горманических колебаний")
 ax.legend()
 
 plt.show()
+
+
