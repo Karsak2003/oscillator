@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 #Ускарение свободного подения, м/с
 g = 9.81
 #Масса материальной точки, кг
-m = 0.1
+m = 1
 #Коэффициент упругости пружины:
 k = 0.981
 #Точка пакоя:
@@ -42,8 +42,14 @@ start_time = 0
 end_time = 10
 dt = 0.001
 
-time = np.arange(start_time, end_time, dt)
-mas_x = [x0 + (fx(t) if t > (start_time + t_distr) else 0) for t in time]
+time = list(np.arange(start_time, end_time, dt))
+mas_x = []
+
+for t in time:
+    if t < (start_time + t_distr):
+        mas_x.append(x0)
+    else:
+        mas_x.append(x0 + fx(t))
 
 fg, ax = plt.subplots(figsize=(7.5, 3.5), layout='constrained')
 
